@@ -30,14 +30,14 @@ namespace WPF_CSV
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            //List<CQData> ss = new List<CQData>();
-            //ss.Add(new CQData());
-            //ss.Add(new CQData());
-            //ss.Add(new CQData());
-            //string str = CQCSVConvert.SerializeObject(ss);
+            List<CQData> ss = new List<CQData>();
+            ss.Add(new CQData());
+            ss.Add(new CQData());
+            ss.Add(new CQData());
+            string str = CQCSVConvert.SerializeObject(ss);
             //File.WriteAllText("AAA.txt", str);
-            string data = File.ReadAllText("AAA.txt");
-            CQCSVConvert.DeserializeObject<List<CQData>>(data);
+            //string data = File.ReadAllText("AAA.txt");
+            //List<CQData> bb = CQCSVConvert.DeserializeObject<List<CQData>>(data);
         }
     }
 
@@ -47,15 +47,28 @@ namespace WPF_CSV
     {
         public CQData()
         {
-            this.ID = DateTime.Now.Millisecond;
-            this.Name = "AA";
-            this.Time = DateTime.Now;
+            //this.ID = DateTime.Now.Millisecond;
+            //this.Name = "AA";
+            //this.Time = DateTime.Now;
         }
-        //[CQCSVProperty(Name="編號")]
+        [CQCSVProperty(Name = "編號")]
         public int ID { set; get; }
-        //[CQCSVProperty(Name = "名稱")]
+        [CQCSVProperty(Name = "名稱")]
+        [CQCSVIgnore]
         public string Name { set; get; }
+        [CQCSVProperty(Name = "Time", Format ="yyyy/MM/dd HH:mm:ss")]
         public DateTime Time { set; get; }
+        [CQCSVIgnore]
+        public string Test { set; get; }
+
+        public override string ToString()
+        {
+            return string.Format("ID:{0} Name:{1} Time:{2} Test:{3}"
+                , this.ID
+                , this.Name
+                , this.Time.ToString("yyyy/MM/dd HH:mm:ss", System.Globalization.DateTimeFormatInfo.InvariantInfo)
+                , this.Test);
+        }
     }
 
 }
