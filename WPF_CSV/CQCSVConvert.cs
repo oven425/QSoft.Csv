@@ -143,22 +143,55 @@ namespace QCSV
             MethodInfo method_count = type.GetMethod("get_Count");
             int count = (int)method_count.Invoke(data, null);
 
+            List<PropertyInfo> pps = new List<PropertyInfo>();
             MethodInfo method = type.GetMethod("get_Item");
             for (int i = 0; i < count; i++)
             {
-
                 object vv = method.Invoke(data, new object[] { i });
-                Type type1 = vv.GetType();
-                PropertyInfo[] pps1 = type1.GetProperties();
-                List<PropertyInfo> pps = new List<PropertyInfo>();
-                for (int j = 0; j < pps1.Length; j++)
+                if (i==0)
                 {
-                    object[] ccu = pps1[j].GetCustomAttributes(typeof(CQCSVIgnore), true);
-                    if(ccu.Length == 0)
+                    Type type1 = vv.GetType();
+                    PropertyInfo[] pps1 = type1.GetProperties();
+                    List<PropertyInfo> pps2 = new List<PropertyInfo>();
+                    for (int j = 0; j < pps1.Length; j++)
                     {
-                        pps.Add(pps1[j]);
+                        object[] ccu = pps1[j].GetCustomAttributes(typeof(CQCSVIgnore), true);
+                        if (ccu.Length == 0)
+                        {
+                            pps2.Add(pps1[j]);
+                        }
+                    }
+
+                    SortedDictionary<int, List<PropertyInfo>> pps3 = new SortedDictionary<int, List<PropertyInfo>>();
+                    for (int j = 0; j < pps2.Count; j++)
+                    {
+                        object[] ccu = pps1[j].GetCustomAttributes(typeof(CQCSVProperty), true);
+                        if (ccu.Length > 0)
+                        {
+                            CQCSVProperty pp = ccu[0] as CQCSVProperty;
+                            if (pp != null)
+                            {
+                                if (pps3.ContainsKey(pp.Column) == true)
+                                {
+                                    pps3[pp.Column].Add(pps2[j]);
+                                }
+                                else
+                                {
+                                    pps3.Add(pp.Column, new List<PropertyInfo>() { pps2[j] });
+                                }
+
+                            }
+
+                        }
+                    }
+                    for(int j=0; j<pps3.Count; j++)
+                    {
+                        pps.AddRange(pps3.ElementAt(j).Value);
                     }
                 }
+               
+                
+                
 
 
                 StringBuilder strb1 = null;
