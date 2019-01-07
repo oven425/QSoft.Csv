@@ -1,7 +1,7 @@
 # CSV Convert
 Provide CSV <-> object
 
-
+# Serialize
 ```csharp
 List<CQData> ss = new List<CQData>();
 ss.Add(new CQData() {ID=1, Name="Q1", Time = DateTime.Now.AddHours(-3) , Test="Test_1"});
