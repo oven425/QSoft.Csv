@@ -31,9 +31,9 @@ namespace WPF_CSV
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             List<CQData> ss = new List<CQData>();
-            ss.Add(new CQData());
-            ss.Add(new CQData());
-            ss.Add(new CQData());
+            ss.Add(new CQData() {ID=1, Name="Q1", Time = DateTime.Now.AddHours(-3) , Test="Test_1"});
+            ss.Add(new CQData() { ID = 2, Name = "Q2", Time = DateTime.Now.AddHours(-2), Test = "Test_2" });
+            ss.Add(new CQData() { ID = 3, Name = "Q3", Time = DateTime.Now.AddHours(-1), Test = "Test_3" });
             string str = CQCSVConvert.SerializeObject(ss);
             //File.WriteAllText("AAA.txt", str);
             //string data = File.ReadAllText("AAA.txt");
@@ -51,12 +51,12 @@ namespace WPF_CSV
             //this.Name = "AA";
             //this.Time = DateTime.Now;
         }
-        [CQCSVProperty(Name = "編號")]
+        [CQCSVProperty(Name = "編號", Column =5)]
         public int ID { set; get; }
-        [CQCSVProperty(Name = "名稱")]
+        [CQCSVProperty(Name = "名稱", Column =2)]
         [CQCSVIgnore]
         public string Name { set; get; }
-        [CQCSVProperty(Name = "Time", Format ="yyyy/MM/dd HH:mm:ss")]
+        [CQCSVProperty(Name = "Time", Column =0, Format ="yyyy/MM/dd HH:mm:ss")]
         public DateTime Time { set; get; }
         [CQCSVIgnore]
         public string Test { set; get; }

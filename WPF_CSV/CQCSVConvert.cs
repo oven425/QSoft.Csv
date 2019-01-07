@@ -163,6 +163,7 @@ namespace QCSV
                     }
 
                     SortedDictionary<int, List<PropertyInfo>> pps3 = new SortedDictionary<int, List<PropertyInfo>>();
+
                     for (int j = 0; j < pps2.Count; j++)
                     {
                         object[] ccu = pps1[j].GetCustomAttributes(typeof(CQCSVProperty), true);
@@ -181,7 +182,6 @@ namespace QCSV
                                 }
 
                             }
-
                         }
                     }
                     for(int j=0; j<pps3.Count; j++)
@@ -189,10 +189,6 @@ namespace QCSV
                         pps.AddRange(pps3.ElementAt(j).Value);
                     }
                 }
-               
-                
-                
-
 
                 StringBuilder strb1 = null;
                 if (i == 0)
@@ -252,6 +248,51 @@ namespace QCSV
 
             return strb.ToString();
         }
+
+        static string ToString(object data, string format)
+        {
+            string str = "";
+            if(string.IsNullOrEmpty(format) == true)
+            {
+                str = data.ToString();
+            }
+            else
+            {
+                if(data is DateTime)
+                {
+                    str = ((DateTime)data).ToString(format, System.Globalization.DateTimeFormatInfo.InvariantInfo);
+                }
+                else if(data is int)
+                {
+                    str = ((int)data).ToString(format);
+                }
+                else if (data is uint)
+                {
+                    str = ((uint)data).ToString(format);
+                }
+                else if (data is short)
+                {
+                    str = ((short)data).ToString(format);
+                }
+                else if (data is ushort)
+                {
+                    str = ((ushort)data).ToString(format);
+                }
+                else if (data is long)
+                {
+                    str = ((long)data).ToString(format);
+                }
+                else if (data is ulong)
+                {
+                    str = ((ulong)data).ToString(format);
+                }
+                else
+                {
+                    str = data.ToString();
+                }
+            }
+            return str;
+        }
     }
 
     public class CQCSVProperty : Attribute
@@ -263,6 +304,5 @@ namespace QCSV
 
     public class CQCSVIgnore:Attribute
     {
-
     }
 }
