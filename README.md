@@ -2,6 +2,13 @@
 Provide CSV <-> object
 
 # Serialize
+
+```csharp
+CQData ss = new CQData() { ID = 1, Name = "Q1", Time = DateTime.Now.AddHours(-3), Test = "Test_1" };
+string str = CQCSVConvert.SerializeObject(ss);
+//ID,Name,Time,Test
+//1,Q1,2019/1/8 下午 02:14:59,Test_1
+```
 ```csharp
 List<CQData> ss = new List<CQData>();
 ss.Add(new CQData() {ID=1, Name="Q1", Time = DateTime.Now.AddHours(-3) , Test="Test_1"});
