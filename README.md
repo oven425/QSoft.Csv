@@ -30,3 +30,5 @@ CQData bb = CQCSVConvert.DeserializeObject<CQData>(csv_str);
 string name = bb.Name;
 // Q1
 ```
+
+#Advanced
