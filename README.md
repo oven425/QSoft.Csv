@@ -21,3 +21,4 @@ string str = CQCSVConvert.SerializeObject(ss);
 //2,Q2,2019/1/7 下午 05:18:08,Test_2
 //3,Q3,2019/1/7 下午 06:18:08,Test_3
 ```
+# Deserialize
