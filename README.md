@@ -22,3 +22,11 @@ string str = CQCSVConvert.SerializeObject(ss);
 //3,Q3,2019/1/7 下午 06:18:08,Test_3
 ```
 # Deserialize
+```csharp
+string csv_str = @"ID,Name,Time,Test
+1,Q1,2019/1/8 下午 02:50:45,Test_1";
+CQData bb = CQCSVConvert.DeserializeObject<CQData>(csv_str);
+
+string name = bb.Name;
+// Q1
+```
