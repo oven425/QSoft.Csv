@@ -44,5 +44,14 @@ CQData bb = CQCSVConvert.DeserializeObject<CQData>(csv_str);
 string name = bb.Name;
 // Q1
 ```
+```csharp
+string csv_str = @"ID,Name,Time,Test
+1,Q1,2019/1/16 上午 07:21:42,Test_1
+2,Q2,2019/1/16 上午 08:21:42,Test_2
+3,Q3,2019/1/16 上午 09:21:42,Test_3";
+List<CQData> bb = CQCSVConvert.DeserializeObject<List<CQData>>(data);
 
+string name = bb[1].Name;
+// Q2
+```
 # Advanced
