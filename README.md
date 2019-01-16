@@ -39,6 +39,7 @@ string str = CQCSVConvert.SerializeObject(ss);
 ```csharp
 string csv_str = @"ID,Name,Time,Test
 1,Q1,2019/1/8 下午 02:50:45,Test_1";
+
 CQData bb = CQCSVConvert.DeserializeObject<CQData>(csv_str);
 
 string name = bb.Name;
@@ -67,8 +68,31 @@ public class CQData
   public DateTime Time { set; get; }
   public string Test { set; get; }
 }
+
 CQData ss = new CQData() { ID = 1, Name = "Q1", Time = DateTime.Now.AddHours(-3), Test = "Test_1" };
 string str = CQCSVConvert.SerializeObject(ss);
+
 //Name,Test
 //Q1,Test_1
+```
+Custom column index and name
+```csharp
+public class CQData
+{
+    [CQCSVProperty(Column = 3, Name ="Number")]
+    public int ID { set; get; }
+    [CQCSVProperty(Column = 1, Name = "First name")]
+    public string Name { set; get; }
+    [CQCSVProperty(Column =0, Name ="Create time")]
+    public DateTime Time { set; get; }
+    [CQCSVProperty(Column = 2, Name = "Second name")]
+    public string Test { set; get; }
+}
+
+CQData ss = new CQData() { ID = 99, Name = "haruka", Time = DateTime.Now.AddHours(-3), Test = "ben" };
+string str = CQCSVConvert.SerializeObject(ss);
+
+//Create time,First name,Second name,Number
+//2019/1/16 上午 08:25:17,haruka,ben,99
+
 ```
