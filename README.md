@@ -45,6 +45,7 @@ string name = bb.Name;
 // Q1
 ```
 ```csharp
+//support List<T>
 string csv_str = @"ID,Name,Time,Test
 1,Q1,2019/1/16 上午 07:21:42,Test_1
 2,Q2,2019/1/16 上午 08:21:42,Test_2
@@ -55,3 +56,19 @@ string name = bb[1].Name;
 // Q2
 ```
 # Advanced
+Ignore column
+```csharp
+public class CQData
+{
+  [CQCSVIgnore]
+  public int ID { set; get; }
+  public string Name { set; get; }
+  [CQCSVIgnore]
+  public DateTime Time { set; get; }
+  public string Test { set; get; }
+}
+CQData ss = new CQData() { ID = 1, Name = "Q1", Time = DateTime.Now.AddHours(-3), Test = "Test_1" };
+string str = CQCSVConvert.SerializeObject(ss);
+//Name,Test
+//Q1,Test_1
+```
