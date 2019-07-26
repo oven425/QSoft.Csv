@@ -34,7 +34,9 @@ namespace WPF_CSV
             ss.Add(new CQData() {ID=1, Name="Q1", Time = DateTime.Now.AddHours(-3) , Test="Test_1"});
             ss.Add(new CQData() { ID = 2, Name = "Q2", Time = DateTime.Now.AddHours(-2), Test = "Test_2" });
             ss.Add(new CQData() { ID = 3, Name = "Q3", Time = DateTime.Now.AddHours(-1), Test = "Test_3" });
-            string str = CQCSVConvert.SerializeObject(ss);
+            string str = CQCSVConvert.SerializeObject(new CQData() { ID = 1, Name = "Q1", Time = DateTime.Now.AddHours(-3), Test = "Test_1" });
+            //string str = CQCSVConvert.SerializeObject(ss);
+
             //File.WriteAllText("AAA.txt", str);
             //string data = File.ReadAllText("AAA.txt");
             //List<CQData> bb = CQCSVConvert.DeserializeObject<List<CQData>>(data);

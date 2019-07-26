@@ -12,3 +12,17 @@ C:\Users\QQ\source\repos\WPF_CSV\WPF_CSV\obj\Debug\WPF_CSV.csproj.GenerateResour
 C:\Users\QQ\source\repos\WPF_CSV\WPF_CSV\obj\Debug\WPF_CSV.csproj.CoreCompileInputs.cache
 C:\Users\QQ\source\repos\WPF_CSV\WPF_CSV\obj\Debug\WPF_CSV.exe
 C:\Users\QQ\source\repos\WPF_CSV\WPF_CSV\obj\Debug\WPF_CSV.pdb
+C:\Users\QQ\Desktop\CSV-Convert-master\WPF_CSV\bin\Debug\WPF_CSV.exe
+C:\Users\QQ\Desktop\CSV-Convert-master\WPF_CSV\bin\Debug\WPF_CSV.pdb
+C:\Users\QQ\Desktop\CSV-Convert-master\WPF_CSV\obj\Debug\WPF_CSV.csprojAssemblyReference.cache
+C:\Users\QQ\Desktop\CSV-Convert-master\WPF_CSV\obj\Debug\MainWindow.g.cs
+C:\Users\QQ\Desktop\CSV-Convert-master\WPF_CSV\obj\Debug\App.g.cs
+C:\Users\QQ\Desktop\CSV-Convert-master\WPF_CSV\obj\Debug\WPF_CSV_MarkupCompile.cache
+C:\Users\QQ\Desktop\CSV-Convert-master\WPF_CSV\obj\Debug\WPF_CSV_MarkupCompile.lref
+C:\Users\QQ\Desktop\CSV-Convert-master\WPF_CSV\obj\Debug\MainWindow.baml
+C:\Users\QQ\Desktop\CSV-Convert-master\WPF_CSV\obj\Debug\WPF_CSV.g.resources
+C:\Users\QQ\Desktop\CSV-Convert-master\WPF_CSV\obj\Debug\WPF_CSV.Properties.Resources.resources
+C:\Users\QQ\Desktop\CSV-Convert-master\WPF_CSV\obj\Debug\WPF_CSV.csproj.GenerateResource.cache
+C:\Users\QQ\Desktop\CSV-Convert-master\WPF_CSV\obj\Debug\WPF_CSV.csproj.CoreCompileInputs.cache
+C:\Users\QQ\Desktop\CSV-Convert-master\WPF_CSV\obj\Debug\WPF_CSV.exe
+C:\Users\QQ\Desktop\CSV-Convert-master\WPF_CSV\obj\Debug\WPF_CSV.pdb

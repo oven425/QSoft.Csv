@@ -135,12 +135,94 @@ namespace QCSV
             }
         }
 
+        static string SerializeObject_Custom(object data, string split = ",", string wrap = "\r\n")
+        {
+            StringBuilder strb = new StringBuilder();
+            List<PropertyInfo> pps = CreateMapping(data);
+
+            for(int i=0; i<pps.Count; i++)
+            {
+                string key = GetPropertyName(pps[i]);
+                string value = "";
+                object oob = pps[i].GetValue(data, null);
+                if(oob != null)
+                {
+                    value = oob.ToString();
+                }
+                strb.Append(string.Format("{0}{1}{2}{3}", key, split, value, wrap));
+
+            }
+            return strb.ToString();
+        }
+
+        static List<PropertyInfo> CreateMapping(object data)
+        {
+            List<PropertyInfo> pps = new List<PropertyInfo>();
+            Type type1 = data.GetType();
+            PropertyInfo[] pps1 = type1.GetProperties();
+            List<PropertyInfo> pps2 = new List<PropertyInfo>();
+            for (int j = 0; j < pps1.Length; j++)
+            {
+                object[] ccu = pps1[j].GetCustomAttributes(typeof(CQCSVIgnore), true);
+                if (ccu.Length == 0)
+                {
+                    pps2.Add(pps1[j]);
+                }
+            }
+
+            SortedDictionary<int, List<PropertyInfo>> pps3 = new SortedDictionary<int, List<PropertyInfo>>();
+
+            for (int j = 0; j < pps2.Count; j++)
+            {
+                object[] ccu = pps1[j].GetCustomAttributes(typeof(CQCSVProperty), true);
+                if (ccu.Length > 0)
+                {
+                    CQCSVProperty pp = ccu[0] as CQCSVProperty;
+                    if (pp != null)
+                    {
+                        if (pps3.ContainsKey(pp.Column) == true)
+                        {
+                            pps3[pp.Column].Add(pps2[j]);
+                        }
+                        else
+                        {
+                            pps3.Add(pp.Column, new List<PropertyInfo>() { pps2[j] });
+                        }
+
+                    }
+                }
+            }
+            for (int j = 0; j < pps3.Count; j++)
+            {
+                pps.AddRange(pps3.ElementAt(j).Value);
+            }
+            return pps;
+        }
+
+        static string GetPropertyName(PropertyInfo property)
+        {
+            object[] ccu = property.GetCustomAttributes(typeof(CQCSVProperty), true);
+            string col_name = property.Name;
+            if (ccu.Length > 0)
+            {
+                if (string.IsNullOrEmpty(((CQCSVProperty)ccu[0]).Name) == false)
+                {
+                    col_name = ((CQCSVProperty)ccu[0]).Name;
+                }
+            }
+            return col_name;
+        }
+
         public static string SerializeObject(object data, string split = ",", string wrap = "\r\n")
         {
             StringBuilder strb = new StringBuilder();
 
             Type type = data.GetType();
             MethodInfo method_count = type.GetMethod("get_Count");
+            if(method_count == null)
+            {
+                return SerializeObject_Custom(data, split, wrap);
+            }
             int count = (int)method_count.Invoke(data, null);
 
             List<PropertyInfo> pps = new List<PropertyInfo>();
@@ -150,44 +232,7 @@ namespace QCSV
                 object vv = method.Invoke(data, new object[] { i });
                 if (i==0)
                 {
-                    Type type1 = vv.GetType();
-                    PropertyInfo[] pps1 = type1.GetProperties();
-                    List<PropertyInfo> pps2 = new List<PropertyInfo>();
-                    for (int j = 0; j < pps1.Length; j++)
-                    {
-                        object[] ccu = pps1[j].GetCustomAttributes(typeof(CQCSVIgnore), true);
-                        if (ccu.Length == 0)
-                        {
-                            pps2.Add(pps1[j]);
-                        }
-                    }
-
-                    SortedDictionary<int, List<PropertyInfo>> pps3 = new SortedDictionary<int, List<PropertyInfo>>();
-
-                    for (int j = 0; j < pps2.Count; j++)
-                    {
-                        object[] ccu = pps1[j].GetCustomAttributes(typeof(CQCSVProperty), true);
-                        if (ccu.Length > 0)
-                        {
-                            CQCSVProperty pp = ccu[0] as CQCSVProperty;
-                            if (pp != null)
-                            {
-                                if (pps3.ContainsKey(pp.Column) == true)
-                                {
-                                    pps3[pp.Column].Add(pps2[j]);
-                                }
-                                else
-                                {
-                                    pps3.Add(pp.Column, new List<PropertyInfo>() { pps2[j] });
-                                }
-
-                            }
-                        }
-                    }
-                    for(int j=0; j<pps3.Count; j++)
-                    {
-                        pps.AddRange(pps3.ElementAt(j).Value);
-                    }
+                    pps = CreateMapping(vv);
                 }
 
                 StringBuilder strb1 = null;
@@ -199,17 +244,10 @@ namespace QCSV
 
                 foreach (PropertyInfo pi in pps)
                 {
+                    //print column name
                     if (i == 0)
                     {
-                        object[] ccu = pi.GetCustomAttributes(typeof(CQCSVProperty), true);
-                        string col_name = pi.Name;
-                        if (ccu.Length > 0)
-                        {
-                            if (string.IsNullOrEmpty(((CQCSVProperty)ccu[0]).Name) == false)
-                            {
-                                col_name = ((CQCSVProperty)ccu[0]).Name;
-                            }
-                        }
+                        string col_name = GetPropertyName(pi);
                         if (strb1.Length > 0)
                         {
                             strb1.Append(split);
