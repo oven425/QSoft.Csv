@@ -30,6 +30,9 @@ namespace WPF_CSV
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            //var singleLine = """This is a "raw string literal". It can contain characters like \, ' and ".""";
+
+
             List<CQData> ss = new List<CQData>();
             ss.Add(new CQData() {ID=1, Name="Q1", Time = DateTime.Now.AddHours(-3) , Test="Test_1"});
             ss.Add(new CQData() { ID = 2, Name = "Q2", Time = DateTime.Now.AddHours(-2), Test = "Test_2" });
