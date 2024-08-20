@@ -5,7 +5,13 @@ VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPF_CSV", "WPF_CSV\WPF_CSV.csproj", "{12E76540-3ACF-4ABC-A468-F507BD70B218}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSoft.Csv", "QSoft.Csv\QSoft.Csv.csproj", "{A95C5CBB-2AAC-4DC1-B840-2DA37E094F0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QSoft.Csv", "QSoft.Csv\QSoft.Csv.csproj", "{A95C5CBB-2AAC-4DC1-B840-2DA37E094F0D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSoft.CsvSG", "QSoft.CsvSG\QSoft.CsvSG.csproj", "{7C83955F-45DD-4BD3-8C5A-8AF42FB15BAC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApp1", "WpfApp1\WpfApp1.csproj", "{06F466E1-61EB-49EC-B56F-CF28F4238547}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary1", "ClassLibrary1\ClassLibrary1.csproj", "{FEFD5A92-703E-4210-937E-F212873889F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +27,18 @@ Global
 		{A95C5CBB-2AAC-4DC1-B840-2DA37E094F0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A95C5CBB-2AAC-4DC1-B840-2DA37E094F0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A95C5CBB-2AAC-4DC1-B840-2DA37E094F0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C83955F-45DD-4BD3-8C5A-8AF42FB15BAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C83955F-45DD-4BD3-8C5A-8AF42FB15BAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C83955F-45DD-4BD3-8C5A-8AF42FB15BAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C83955F-45DD-4BD3-8C5A-8AF42FB15BAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06F466E1-61EB-49EC-B56F-CF28F4238547}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06F466E1-61EB-49EC-B56F-CF28F4238547}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06F466E1-61EB-49EC-B56F-CF28F4238547}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06F466E1-61EB-49EC-B56F-CF28F4238547}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEFD5A92-703E-4210-937E-F212873889F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEFD5A92-703E-4210-937E-F212873889F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEFD5A92-703E-4210-937E-F212873889F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEFD5A92-703E-4210-937E-F212873889F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
