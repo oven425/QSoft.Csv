@@ -91,11 +91,5 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\QSoft.CsvSG\QSoft.CsvSG.csproj">
-      <Project>{7c83955f-45dd-4bd3-8c5a-8af42fb15bac}</Project>
-      <Name>QSoft.CsvSG</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

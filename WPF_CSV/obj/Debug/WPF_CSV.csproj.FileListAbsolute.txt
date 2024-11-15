@@ -41,6 +41,3 @@ C:\Users\oven4\source\repos\QSoft.Csv\WPF_CSV\obj\Debug\WPF_CSV.csproj.GenerateR
 C:\Users\oven4\source\repos\QSoft.Csv\WPF_CSV\obj\Debug\WPF_CSV.csproj.CoreCompileInputs.cache
 C:\Users\oven4\source\repos\QSoft.Csv\WPF_CSV\obj\Debug\WPF_CSV.exe
 C:\Users\oven4\source\repos\QSoft.Csv\WPF_CSV\obj\Debug\WPF_CSV.pdb
-C:\Users\oven4\source\repos\QSoft.Csv\WPF_CSV\bin\Debug\QSoft.CsvSG.dll
-C:\Users\oven4\source\repos\QSoft.Csv\WPF_CSV\bin\Debug\QSoft.CsvSG.pdb
-C:\Users\oven4\source\repos\QSoft.Csv\WPF_CSV\obj\Debug\WPF_CSV.csproj.Up2Date
