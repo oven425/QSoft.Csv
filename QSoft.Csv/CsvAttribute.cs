@@ -12,5 +12,10 @@ namespace QSoft.Csv
     {
     }
 
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    public class CsvContextAttribute:Attribute
+    {
+
+    }
 
 }

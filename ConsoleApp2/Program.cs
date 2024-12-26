@@ -2,4 +2,13 @@
 using QSoft.Csv;
 
 Console.WriteLine("Hello, World!");
+
+
 var cw = new CsvWriter<int>(new MemoryStream());
+
+[CsvContextAttribute]
+public class dd
+{
+    public int Id { get; set; }
+    public string ddd { set; get; }
+}
