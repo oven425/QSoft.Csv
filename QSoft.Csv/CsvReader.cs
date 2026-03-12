@@ -2,20 +2,20 @@
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Text;
+using System.Runtime.CompilerServices;
 
 namespace QSoft.Csv
 {
     public class CsvReader : IDisposable
     {
         private readonly StreamReader _fileStream;
-        private readonly char[] _buffer;
+        private char[] _buffer;
         private int _bufferLength;
         private int _bufferPosition;
         private readonly int _bufferSize;
         private bool _endOfStream;
-
+        private bool _skipNextLF;
+        private readonly List<Range> _ranges = [];
         public CsvReader(string filePath, int bufferSize = 4096)
         {
             _fileStream = new StreamReader(filePath);
@@ -25,14 +25,40 @@ namespace QSoft.Csv
             _bufferPosition = 0;
         }
 
-        /// <summary>
-        /// 讀取一行數據（支援 \r, \n, \r\n）
-        /// 返回 Span 和換行符結束位置
-        /// </summary>
-        public bool Readline(out ReadOnlySpan<char> line)
+        public bool TryReadRecord(out CsvColumns record)
+        {
+            if (ReadLine(out var line) is { } ranges)
+            {
+                record = new CsvColumns(line, ranges);
+                return true;
+            }
+            record = default;
+            return false;
+        }
+
+        public Range[]? ReadLine(out ReadOnlySpan<char> line)
         {
             line = default;
-            int lineStart = _bufferPosition;
+
+            if (_skipNextLF)
+            {
+                _skipNextLF = false;
+                if (_bufferPosition >= _bufferLength && !_endOfStream)
+                {
+                    RefillBuffer(_bufferPosition);
+                    _bufferPosition = 0;
+                }
+                if (_bufferPosition < _bufferLength && _buffer[_bufferPosition] == '\n')
+                    _bufferPosition++;
+            }
+
+            if (_endOfStream && _bufferPosition >= _bufferLength)
+                return null;
+
+            _ranges.Clear();
+            int recordStart = _bufferPosition;
+            int columnRelStart = 0;
+            bool inQuotes = false;
 
             while (true)
             {
@@ -40,108 +66,125 @@ namespace QSoft.Csv
                 {
                     if (_endOfStream)
                     {
-                        if (lineStart < _bufferLength)
+                        int lineLen = _bufferPosition - recordStart;
+                        if (lineLen > 0 || _ranges.Count > 0)
                         {
-                            line = _buffer.AsSpan(lineStart, _bufferLength - lineStart);
-                            _bufferPosition = _bufferLength;
-                            return true;
+                            AddColumnRange(_ranges, recordStart, columnRelStart, lineLen);
+                            line = _buffer.AsSpan(recordStart, lineLen);
+                            return [.. _ranges];
                         }
-                        return false;
+                        return null;
                     }
 
-                    // 讀取更多數據
-                    RefillBuffer(lineStart);
-                    if (_bufferLength == 0) return false;
-                    lineStart = 0;
+                    int recordLen = _bufferPosition - recordStart;
+                    EnsureBufferCapacity(recordLen + _bufferSize);
+                    RefillBuffer(recordStart);
+                    _bufferPosition = recordLen;
+                    recordStart = 0;
+                    continue;
                 }
 
-                var current = _buffer[_bufferPosition];
+                char ch = _buffer[_bufferPosition];
+                int relPos = _bufferPosition - recordStart;
 
-                // 檢查換行符
-                if (current == '\n')
+                if (ch == '"')
                 {
-                    line = _buffer.AsSpan(lineStart, _bufferPosition - lineStart);
+                    inQuotes = !inQuotes;
                     _bufferPosition++;
-                    return true;
                 }
-
-                if (current == '\r')
+                else if (ch == ',' && !inQuotes)
                 {
-                    int lineLen = _bufferPosition - lineStart;
+                    AddColumnRange(_ranges, recordStart, columnRelStart, relPos);
+                    columnRelStart = relPos + 1;
+                    _bufferPosition++;
+                }
+                else if ((ch == '\r' || ch == '\n') && !inQuotes)
+                {
+                    int lineLen = relPos;
                     _bufferPosition++;
 
-                    // 檢查是否是 \r\n
-                    if (_bufferPosition < _bufferLength && _buffer[_bufferPosition] == '\n')
+                    if (ch == '\r')
                     {
-                        _bufferPosition++;
+                        if (_bufferPosition < _bufferLength)
+                        {
+                            if (_buffer[_bufferPosition] == '\n')
+                                _bufferPosition++;
+                        }
+                        else if (!_endOfStream)
+                        {
+                            _skipNextLF = true;
+                        }
                     }
 
-                    line = _buffer.AsSpan(lineStart, lineLen);
-                    return true;
+                    // 加入最後一個欄位（帶引號處理）
+                    AddColumnRange(_ranges, recordStart, columnRelStart, lineLen);
+                    line = _buffer.AsSpan(recordStart, lineLen);
+                    return [.. _ranges];
                 }
-
-                _bufferPosition++;
+                else
+                {
+                    _bufferPosition++;
+                }
             }
         }
 
-        /// <summary>
-        /// 分割列，返回每列的 Range
-        /// 假設每列都用雙引號包起來
-        /// </summary>
-        public List<Range> SplitColumn(ReadOnlySpan<char> line)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void AddColumnRange(List<Range> ranges, int recordStart, int columnStart, int columnEnd)
         {
-            var ranges = new List<Range>();
-            int columnStart = 0;
-            bool inQuotes = false;
+            int start = columnStart;
+            int end = columnEnd;
+            int length = end - start;
 
-            for (int i = 0; i < line.Length; i++)
+            if (length >= 2)
             {
-                var current = line[i];
-
-                if (current == '"')
+                int absStart = recordStart + start;
+                int absEnd = recordStart + end - 1;
+                
+                if (absStart < _bufferLength && absEnd < _bufferLength &&
+                    _buffer[absStart] == '"' && _buffer[absEnd] == '"')
                 {
-                    inQuotes = !inQuotes;
-                }
-                else if (current == ',' && !inQuotes)
-                {
-                    // 找到列分隔符
-                    ranges.Add(new Range(columnStart+1, i-1));
-                    columnStart = i + 1;
+                    start++;
+                    end--;
                 }
             }
 
-            // 加入最後一列
-            if (columnStart < line.Length)
-            {
-                ranges.Add(new Range(columnStart, line.Length));
-            }
+            ranges.Add(new Range(start, end));
+        }
 
-            return ranges;
+        private void EnsureBufferCapacity(int required)
+        {
+            if (_buffer.Length >= required)
+                return;
+
+            int newSize = Math.Max(_buffer.Length * 2, required);
+            char[] newBuffer = ArrayPool<char>.Shared.Rent(newSize);
+            Array.Copy(_buffer, newBuffer, _bufferLength);
+            ArrayPool<char>.Shared.Return(_buffer);
+            _buffer = newBuffer;
         }
 
         private void RefillBuffer(int preserveFrom)
         {
-            // 如果需要，移動未讀資料到緩衝區開始
-            if (preserveFrom > 0 && preserveFrom < _bufferLength)
+            if (preserveFrom >= _bufferLength)
+            {
+                _bufferLength = 0;
+                _bufferPosition = 0;
+            }
+            else if (preserveFrom > 0)
             {
                 int remaining = _bufferLength - preserveFrom;
                 Array.Copy(_buffer, preserveFrom, _buffer, 0, remaining);
                 _bufferLength = remaining;
                 _bufferPosition = 0;
             }
-            else
-            {
-                _bufferLength = 0;
-                _bufferPosition = 0;
-            }
 
-            // 讀取新數據
-            int bytesRead = _fileStream.Read(_buffer, _bufferLength, _bufferSize - _bufferLength);
-            _bufferLength += bytesRead;
-
-            if (bytesRead == 0)
+            int available = _buffer.Length - _bufferLength;
+            if (available > 0)
             {
-                _endOfStream = true;
+                int bytesRead = _fileStream.Read(_buffer, _bufferLength, available);
+                _bufferLength += bytesRead;
+                if (bytesRead == 0)
+                    _endOfStream = true;
             }
         }
 
@@ -149,6 +192,40 @@ namespace QSoft.Csv
         {
             _fileStream?.Dispose();
             ArrayPool<char>.Shared.Return(_buffer);
+        }
+    }
+
+    public readonly ref struct CsvColumns
+    {
+        private readonly ReadOnlySpan<char> _line;
+        private readonly ReadOnlySpan<Range> _ranges;
+
+        internal CsvColumns(ReadOnlySpan<char> line, ReadOnlySpan<Range> ranges)
+        {
+            _line = line;
+            _ranges = ranges;
+        }
+
+        public int ColumnCount => _ranges.Length;
+
+        /// <summary>取得指定索引的欄位內容（零複製）</summary>
+        public ReadOnlySpan<char> this[int index] => _line[_ranges[index]];
+    }
+
+    public static class CsvReaderExtensions
+    {
+        public static int? ToInt(this ReadOnlySpan<char> span)
+        {
+            if (int.TryParse(span, out var result))
+                return result;
+            return null;
+        }
+
+        public static double? ToDouble(this ReadOnlySpan<char> span)
+        {
+            if (double.TryParse(span, out var result))
+                return result;
+            return null;
         }
     }
 }

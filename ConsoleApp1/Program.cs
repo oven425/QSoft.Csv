@@ -6,22 +6,48 @@ using System.Text;
 
 GenerateTestCsvFile("data.csv");
 using var reader = new CsvReader("data.csv");
-while (reader.Readline(out var line))
+List<People> peopleList = [];
+while (reader.TryReadRecord(out var columns))
 {
-    var columns = reader.SplitColumn(line);
-    foreach (var range in columns)
+    var people = new People
     {
-        var columnValue = line[range];
-        int.TryParse(columnValue, out int numericValue);
-        string category = columnValue.ToString();
-    }
+        Name = columns[0].ToString(),
+        Age = columns[1].ToInt() ?? 0,
+        Height = columns[2].ToInt() ?? 0
+    };
+    peopleList.Add(people);
 }
+foreach (var people in peopleList)
+{
+    Console.WriteLine(people.Name);
+}
+//try
+//{
+//    var aa = CsvSerializer.Deserialize<People>("data.csv", x =>
+//    {
+//        var people = new People();
+//        people.Name = x[0].ToString();
+//        people.Age = x[1].ToInt() ?? 0;
+//        people.Height = x[2].ToInt() ?? 0;
+//        return people;
+//    });
+//    foreach(var oo in aa)
+//    {
+
+//    }
+//}
+//catch (Exception ex)
+//{
+//    Console.WriteLine($"Error: {ex.Message}");
+//}
+Console.WriteLine("");
+
 static void GenerateTestCsvFile(string filePath)
 {
     var lines = new[]
     {
-        "\"name\",\"age\",\"height\",\"weight\"",
-        "\"Alice\",\"25\",\"165\",\"55\"",
+        "\"na\r\nme\",age,\"height\",\"weight\"",
+        "\"Alice\r\n艾莉絲\",\"25\",\"165\",\"55\"",
         "\"Bob\",\"30\",\"180\",\"75\"",
         "\"Charlie\",\"28\",\"175\",\"70\"",
         "\"Diana\",\"26\",\"160\",\"52\"",
@@ -35,4 +61,11 @@ static void GenerateTestCsvFile(string filePath)
 
     File.WriteAllLines(filePath, lines, Encoding.UTF8);
     Console.WriteLine($"✓ 已生成 {filePath}，包含 {lines.Length} 行資料");
+}
+
+public class People
+{
+    public string Name { set; get; }
+    public int Age { set; get; }
+    public int Height { set; get; }
 }
