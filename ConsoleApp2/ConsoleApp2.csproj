@@ -8,7 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\QSoft.CsvSG\QSoft.CsvSG.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
     <ProjectReference Include="..\QSoft.Csv\QSoft.Csv.csproj" />
   </ItemGroup>
 

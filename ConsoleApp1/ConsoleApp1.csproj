@@ -10,7 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\QSoft.CsvSG\QSoft.CsvSG.csproj" />
     <ProjectReference Include="..\QSoft.Csv\QSoft.Csv.csproj" />
   </ItemGroup>
 
