@@ -1,0 +1,42 @@
+name: .NET Core Unit Tests with Report
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  test:
+    runs-on: linux
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore
+      run: dotnet restore
+
+    # 執行測試並輸出 trx 檔
+    - name: Run unit tests
+      run: dotnet test --logger "trx;LogFileName=test_results.trx" --results-directory TestResults
+
+    # 安裝 ReportGenerator 工具
+    - name: Install ReportGenerator
+      run: dotnet tool install --global dotnet-reportgenerator-globaltool
+
+    # 轉換 trx 成 HTML 報告
+    - name: Generate HTML report
+      run: reportgenerator -reports:TestResults/*.trx -targetdir:TestResults/report -reporttypes:Html
+
+    # 上傳測試結果與 HTML 報告
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: TestResults
+        path: TestResults
