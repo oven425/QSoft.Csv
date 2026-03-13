@@ -5,18 +5,28 @@ using System.Text;
 
 
 GenerateTestCsvFile("data.csv");
-using var reader = new CsvReader("data.csv");
 List<People> peopleList = [];
-while (reader.TryReadRecord(out var columns))
+StringBuilder sb = new();
+
+using var stream = File.OpenRead("data.csv");
+using var reader = new CsvReader(stream);
+while (reader.Read(out var columns))
 {
-    var people = new People
+    
+    for (int i = 0; i < columns.Length; i++)
     {
-        Name = columns[0].ToString(),
-        Age = columns[1].ToInt() ?? 0,
-        Height = columns[2].ToInt() ?? 0
-    };
-    peopleList.Add(people);
+        //sb.Append($"Column {i}: {columns[i]} | ");
+    }
+    //sb.AppendLine();
+    //var people = new People
+    //{
+    //    Name = columns[0].ToString(),
+    //    Age = columns[1].ToInt() ?? 0,
+    //    Height = columns[2].ToInt() ?? 0
+    //};
+    //peopleList.Add(people);
 }
+//System.Diagnostics.Trace.WriteLine(sb.ToString());
 foreach (var people in peopleList)
 {
     Console.WriteLine(people.Name);
@@ -46,7 +56,7 @@ static void GenerateTestCsvFile(string filePath)
 {
     var lines = new[]
     {
-        "\"na\r\nme\",age,\"height\",\"weight\"",
+        "\"na\"me\"\",age,\"height\",\"weight\"",
         "\"Alice\r\n艾莉絲\",\"25\",\"165\",\"55\"",
         "\"Bob\",\"30\",\"180\",\"75\"",
         "\"Charlie\",\"28\",\"175\",\"70\"",

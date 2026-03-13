@@ -3,6 +3,8 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace QSoft.Csv
 {
@@ -16,29 +18,19 @@ namespace QSoft.Csv
         private bool _endOfStream;
         private bool _skipNextLF;
         private readonly List<Range> _ranges = [];
-        public CsvReader(string filePath, int bufferSize = 4096)
+        public CsvReader(Stream stream, int bufferSize = 16)
         {
-            _fileStream = new StreamReader(filePath);
+            _fileStream = new StreamReader(stream, Encoding.UTF8);
             _bufferSize = bufferSize;
             _buffer = ArrayPool<char>.Shared.Rent(bufferSize);
             _bufferLength = 0;
             _bufferPosition = 0;
         }
 
-        public bool TryReadRecord(out CsvColumns record)
-        {
-            if (ReadLine(out var line) is { } ranges)
-            {
-                record = new CsvColumns(line, ranges);
-                return true;
-            }
-            record = default;
-            return false;
-        }
 
-        public Range[]? ReadLine(out ReadOnlySpan<char> line)
+        public bool Read(out CsvColumns record)
         {
-            line = default;
+            record = default;
 
             if (_skipNextLF)
             {
@@ -53,7 +45,7 @@ namespace QSoft.Csv
             }
 
             if (_endOfStream && _bufferPosition >= _bufferLength)
-                return null;
+                return false;
 
             _ranges.Clear();
             int recordStart = _bufferPosition;
@@ -70,10 +62,11 @@ namespace QSoft.Csv
                         if (lineLen > 0 || _ranges.Count > 0)
                         {
                             AddColumnRange(_ranges, recordStart, columnRelStart, lineLen);
-                            line = _buffer.AsSpan(recordStart, lineLen);
-                            return [.. _ranges];
+                            var line = _buffer.AsSpan(recordStart, lineLen);
+                            record = new CsvColumns(line, CollectionsMarshal.AsSpan(_ranges));
+                            return true;
                         }
-                        return null;
+                        return false;
                     }
 
                     int recordLen = _bufferPosition - recordStart;
@@ -116,10 +109,10 @@ namespace QSoft.Csv
                         }
                     }
 
-                    // 加入最後一個欄位（帶引號處理）
                     AddColumnRange(_ranges, recordStart, columnRelStart, lineLen);
-                    line = _buffer.AsSpan(recordStart, lineLen);
-                    return [.. _ranges];
+                    var line = _buffer.AsSpan(recordStart, lineLen);
+                    record = new (line, CollectionsMarshal.AsSpan(_ranges));
+                    return true;
                 }
                 else
                 {
@@ -191,7 +184,12 @@ namespace QSoft.Csv
         public void Dispose()
         {
             _fileStream?.Dispose();
-            ArrayPool<char>.Shared.Return(_buffer);
+            if (_buffer != null)
+            {
+                ArrayPool<char>.Shared.Return(_buffer);
+                _buffer = null;
+            }
+            
         }
     }
 
@@ -206,7 +204,7 @@ namespace QSoft.Csv
             _ranges = ranges;
         }
 
-        public int ColumnCount => _ranges.Length;
+        public int Length => _ranges.Length;
 
         /// <summary>取得指定索引的欄位內容（零複製）</summary>
         public ReadOnlySpan<char> this[int index] => _line[_ranges[index]];
